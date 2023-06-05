@@ -22,42 +22,6 @@ def dictfetchall(cursor):
     return natija
 
 
-# def dictfetchone(cursor):
-#     row = cursor.fetchone()
-#     if row is None:
-#         return False
-#     columns = [col[0] for col in cursor.description]
-#     return dict(zip(columns, row))
-#
-#
-# def get_all_ctg():
-#     sql = """
-#         select * from sayt_category
-#         where is_menu = true
-#     """
-#
-#     with closing(connection.cursor()) as cursor:
-#         cursor.execute(sql)
-#         result = dictfetchall(cursor)
-#
-#         return result
-#
-#
-# def search_new(savol):
-#     sql = f"""
-#         select ne.id, ne.title, ne.short_desc, ne.img, ne."view", ctg.name as ctg from sayt_news ne
-#         left join sayt_category ctg on ctg.id = ne.ctg_id
-#         where lower(ne.title) like lower('%{savol}%') or lower(ne.short_desc) like lower('%{savol}%')
-#         order by ne."view" desc
-#     """
-#
-#     with closing(connection.cursor()) as cursor:
-#         cursor.execute(sql)
-#         result = dictfetchall(cursor)
-#
-#         return result
-
-
 def check_phone_in_db(phone):
     sql = f"""
         SELECT phone from director_User t
