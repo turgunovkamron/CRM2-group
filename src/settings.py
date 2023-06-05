@@ -52,6 +52,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'src.urls'
 
+APP_NAME = "CRM2-Group"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -80,6 +82,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'crm2group_db',
+#         'USER': 'crm2group',
+#         'PASSWORD': 'admin123456',
+#         'PORT': 5432,
+#         'HOST': '127.0.0.1',
+#     }
+# }
 
 
 # Password validation
