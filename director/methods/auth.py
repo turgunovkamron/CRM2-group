@@ -2,10 +2,9 @@ import datetime
 import random
 import uuid
 
-from methodism import custom_response, error_params_unfilled, code_decoder, generate_key
+from methodism import custom_response, code_decoder, generate_key
 from rest_framework.authtoken.models import Token
 
-from base.SMS import send_sms
 from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db
 from director.models import User, OTP
 
@@ -14,17 +13,13 @@ def regis(requests, params):
     nott = 'token' if 'token' not in params else 'password' if 'password' not in params else 'username' if 'username' not in params else 'email' if 'email' not in params else ''
     if nott:
         return custom_response(False, message=f"{nott} paramsda bo'lishi kere")
-
     token = check_token_in_db(params['token'])
     if not token:
         return custom_response(False, message="Token xato")
-
     if token.is_conf:
         return custom_response(False, message="Token ishlatilgan")
-
     if len(str(params['password'])) < 8 or " " in params['password']:
         return custom_response(False, message="Parol 8tadan kichkina bolishi kerak emas")
-
     user_data = {
         'phone': params['phone'],
         'password': params['password'],
@@ -33,19 +28,11 @@ def regis(requests, params):
         'email': params['email'],
         'username': params['username'],
     }
-
     if params.get('key', None) == 'SecretKey':
-        user_data.update({
-            'is_staff': True,
-            'is_superuser': True,
-        })
-
+        user_data.update({'is_staff': True, 'is_superuser': True})
     user = User.object.create_superuser(**user_data)
-
     token = Token.objects.create(user=user)
-
     return custom_response(True, data=token.key)
-
 
 def login(requests, params):
     nott = 'password' if 'password' not in params else 'phone' if 'phone' not in params else ''
