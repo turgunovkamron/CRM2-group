@@ -64,7 +64,6 @@ def logout(requests, params):
 def stepone(requests, params):
     if 'phone' not in params:
         return custom_response(False, message="Data to'liq emas")
-
     if len(str(params['phone'])) != 12:
         return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
 
@@ -77,11 +76,6 @@ def stepone(requests, params):
         return custom_response(False, message="Bu nomer boyicha user bor")
 
     code = random.randint(1000000, 9999999)
-
-    # SMS
-    # sms = send_sms(phone=params['phone'], otp=code)
-    # if sms['status'] != 'waiting':
-    #     return custom_response(False, message=sms)
 
     shifr = uuid.uuid4().__str__() + '&' + str(code) + '&' + generate_key(21)
     shifr = code_decoder(shifr, l=3)

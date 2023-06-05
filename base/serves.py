@@ -3,6 +3,13 @@ from contextlib import closing
 from django.db import connection
 
 
+def dictfetchone(cursor):
+    row = cursor.fetchone()
+    if row is None:
+        return False
+    columns = [col[0] for col in cursor.description]
+    return dict(zip(columns, row))
+
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = []
@@ -41,7 +48,7 @@ def check_token_in_db(token):
     """
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
-        result = dictfetchall(cursor)
+        result = dictfetchone(cursor)
 
         return result
 
