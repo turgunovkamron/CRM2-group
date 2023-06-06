@@ -43,8 +43,8 @@ def check_phone_in_db(phone):
 
 def check_token_in_db(token):
     sql = f"""
-        SELECT key from director_OTP t
-        where t.key like '{token}'
+        SELECT * from director_otp t
+where t.key = '{token}'
     """
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
@@ -55,7 +55,7 @@ def check_token_in_db(token):
 def check_user_in_token_db(user):
     sql = f"""
         SELECT key from director_Token t
-        where t.user like '{user}'
+        where t.user like '{user}'  
     """
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)

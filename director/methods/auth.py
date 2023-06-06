@@ -5,6 +5,7 @@ import uuid
 from methodism import custom_response, code_decoder, generate_key
 from rest_framework.authtoken.models import Token
 
+from base.send_email import send_email
 from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db
 from director.models import User, OTP
 
@@ -62,6 +63,7 @@ def logout(requests, params):
 
 
 def stepone(requests, params):
+    # send_email()
     if 'phone' not in params:
         return custom_response(False, message="Data to'liq emas")
     if len(str(params['phone'])) != 12:
@@ -76,6 +78,8 @@ def stepone(requests, params):
         return custom_response(False, message="Bu nomer boyicha user bor")
 
     code = random.randint(1000000, 9999999)
+
+
 
     shifr = uuid.uuid4().__str__() + '&' + str(code) + '&' + generate_key(21)
     shifr = code_decoder(shifr, l=3)
@@ -96,25 +100,25 @@ def steptwo(requests, params):
     token = check_token_in_db(params['token'])
     if not token:
         return custom_response(False, message="Token xato")
-
-    if token.is_conf:
+    print(token)
+    if token['is_conf']:
         return custom_response(False, message="Token ishlatilgan")
 
-    if token.is_expire:
+    if token['is_expire']:
         return custom_response(False, message="Token eski")
 
     now = datetime.datetime.now(datetime.timezone.utc)
 
-    if (now - token.created).total_seconds() >= 180:
-        token.is_expire = True
+    if (now - token['created']).total_seconds() >= 180:
+        token['is_expire'] = True
         return custom_response(False, message="Tokenga berilgan vaqt tugadi")
 
-    code = code_decoder(token.key, decode=True, l=3).split('&')[1]
+    code = code_decoder(token['key'], decode=True, l=3).split('&')[1]
 
     if str(params['otp']) != code:
         return custom_response(False, message="Kode xato")
 
-    token.is_conf = True
+    token['is_conf'] = True
     token.save()
 
     return custom_response(True, message="Ishladi", data={'otp': code})
