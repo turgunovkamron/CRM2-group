@@ -6,7 +6,7 @@ from methodism import custom_response, code_decoder, generate_key
 from rest_framework.authtoken.models import Token
 
 from base.send_email import send_email
-from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db, check_email_in_db
+from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db, check_email_in_db, update_token
 from director.models import User, OTP
 
 
@@ -101,7 +101,7 @@ def steptwo(requests, params):
     token = check_token_in_db(params['token'])
     if not token:
         return custom_response(False, message="Token xato")
-    print(token)
+    # print(token)
     if token['is_conf']:
         return custom_response(False, message="Token ishlatilgan")
 
@@ -112,14 +112,18 @@ def steptwo(requests, params):
 
     if (now - token['created']).total_seconds() >= 180:
         token['is_expire'] = True
+        update_token(token)
         return custom_response(False, message="Tokenga berilgan vaqt tugadi")
 
     code = code_decoder(token['key'], decode=True, l=3).split('&')[1]
 
     if str(params['otp']) != code:
+        token['tries'] += 1
+        update_token(token)
+
         return custom_response(False, message="Kode xato")
 
     token['is_conf'] = True
-    token.save()
+    update_token(token)
 
     return custom_response(True, message="Ishladi", data={'otp': code})

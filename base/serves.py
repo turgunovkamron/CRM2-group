@@ -10,6 +10,7 @@ def dictfetchone(cursor):
     columns = [col[0] for col in cursor.description]
     return dict(zip(columns, row))
 
+
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = []
@@ -44,13 +45,15 @@ def check_phone_in_db(phone):
 def check_token_in_db(token):
     sql = f"""
         SELECT * from director_otp t
-where t.key = '{token}'
+        where t.key = '{token}'
     """
+
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
         result = dictfetchone(cursor)
 
         return result
+
 
 def check_user_in_token_db(user):
     sql = f"""
@@ -74,3 +77,22 @@ def check_email_in_db(email):
         result = dictfetchall(cursor)
 
         return result
+
+
+def update_token(token):
+    print(token)
+
+    if token['tries'] >= 4:
+        token['is_expire'] = True
+
+    sql = f"""
+        UPDATE director_otp
+        SET is_conf = {token['is_conf']},
+        is_expire = {token['is_expire']},
+        tries = {token['tries']}
+        where key  = '{token['key']}'
+    """
+    with closing(connection.cursor()) as cursor:
+        cursor.execute(sql)
+
+        return True

@@ -14,5 +14,5 @@ class OTP(models.Model):
 
     def save(self, *args, **kwargs):
         if self.tries >= 3:
-            self.is_expri = True
+            self.is_expire = True
         return super(OTP, self).save(*args, **kwargs)
