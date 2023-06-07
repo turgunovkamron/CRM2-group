@@ -6,7 +6,7 @@ from methodism import custom_response, code_decoder, generate_key
 from rest_framework.authtoken.models import Token
 
 from base.send_email import send_email
-from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db
+from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db, check_email_in_db
 from director.models import User, OTP
 
 
@@ -64,27 +64,28 @@ def logout(requests, params):
 
 def stepone(requests, params):
     # send_email()
-    if 'phone' not in params:
+    if 'email' not in params:
         return custom_response(False, message="Data to'liq emas")
-    if len(str(params['phone'])) != 12:
-        return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
 
-    if type(params['phone']) is not int:
-        return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
+    # if len(str(params['phone'])) != 12:
+    #     return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
+    #
+    # if type(params['phone']) is not int:
+    #     return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
 
-    user = check_phone_in_db(params['phone'])
+    user = check_email_in_db(params['email'])
 
     if user:
         return custom_response(False, message="Bu nomer boyicha user bor")
 
     code = random.randint(1000000, 9999999)
 
-
+    send_email(OTP=code, email=params['email'])
 
     shifr = uuid.uuid4().__str__() + '&' + str(code) + '&' + generate_key(21)
     shifr = code_decoder(shifr, l=3)
 
-    otp = OTP.objects.create(key=shifr, phone=params['phone'])
+    otp = OTP.objects.create(key=shifr, email=params['email'])
 
     return custom_response(True, data={
         'otp': code,

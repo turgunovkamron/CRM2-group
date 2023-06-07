@@ -3,7 +3,7 @@ from django.db import models
 
 class OTP(models.Model):
     key = models.CharField(max_length=1024)
-    phone = models.CharField(max_length=20)
+    email = models.CharField(max_length=50)
 
     is_conf = models.BooleanField(default=False)
     is_expire = models.BooleanField(default=False)

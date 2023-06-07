@@ -36,7 +36,7 @@ def check_phone_in_db(phone):
     """
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
-        result = dictfetchall(cursor)
+        result = dictfetchone(cursor)
 
         return result
 
@@ -56,6 +56,18 @@ def check_user_in_token_db(user):
     sql = f"""
         SELECT key from director_Token t
         where t.user like '{user}'  
+    """
+    with closing(connection.cursor()) as cursor:
+        cursor.execute(sql)
+        result = dictfetchone(cursor)
+
+        return result
+
+
+def check_email_in_db(email):
+    sql = f"""
+        SELECT * from director_User t
+        where t.email = '{email}'
     """
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
