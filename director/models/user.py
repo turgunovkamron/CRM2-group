@@ -6,8 +6,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 
 class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=124, null=True, blank=True)
-    username = models.CharField(max_length=130)
-    surname = models.CharField(max_length=131)
     phone = models.CharField(max_length=131, null=True, blank=True)
     password = models.CharField(max_length=1029)
     email = models.EmailField(unique=True)
