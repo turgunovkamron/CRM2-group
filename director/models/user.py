@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 
 class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=124, null=True, blank=True)
+    last_name = models.CharField(max_length=128, null=True, blank=True)
     phone = models.CharField(max_length=131, null=True, blank=True)
     password = models.CharField(max_length=1029)
     email = models.EmailField(unique=True)
@@ -19,8 +20,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    def format(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "join_date": self.join_date,
+            "phone": self.phone,
+            "type": self.type,
+            "last_name": self.last_name
+        }
+
 
 class CustomUserManager(UserManager):
+
     def create_user(self, email, password=None, is_staff=False, is_active=True, is_superuser=False,
                     **extra_fields):
         user = self.model(email=email,

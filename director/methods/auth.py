@@ -11,29 +11,48 @@ from director.models import User, OTP
 
 
 def regis(requests, params):
-    nott = 'token' if 'token' not in params else 'password' if 'password' not in params else 'username' if 'username' not in params else 'email' if 'email' not in params else ''
+    nott = 'token' if 'token' not in params else 'password' if 'password' not in params else 'phone' if 'phone' not in params else ''
+    # print("a")
     if nott:
+        # print("aa")
         return custom_response(False, message=f"{nott} paramsda bo'lishi kere")
+    # print("b")
     token = check_token_in_db(params['token'])
+    # print("c")
     if not token:
+        # print("cc")
         return custom_response(False, message="Token xato")
-    if token.is_conf:
-        return custom_response(False, message="Token ishlatilgan")
+
+    # print("d")
+    if token['is_expire']:
+        return custom_response(False, message="Token yaroqsiz!")
+
+    if not token['is_conf']:
+        return custom_response(False, message="Token tastiqlanmagan")
+
+    if len(str(params['phone'])) != 12:
+        return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
+
+    if type(params['phone']) is not int:
+        return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
+
     if len(str(params['password'])) < 8 or " " in params['password']:
         return custom_response(False, message="Parol 8tadan kichkina bolishi kerak emas")
+
     user_data = {
         'phone': params['phone'],
         'password': params['password'],
         'name': params.get('name', " "),
-        'surname': params.get('surname', " "),
-        'email': params['email'],
-        'username': params['username'],
+        'last_name': params.get('last_name', " "),
+        'email': token['email']
     }
+
     if params.get('key', None) == 'SecretKey':
         user_data.update({'is_staff': True, 'is_superuser': True})
-    user = User.object.create_superuser(**user_data)
+    user = User.objects.create_superuser(**user_data)
     token = Token.objects.create(user=user)
     return custom_response(True, data=token.key)
+
 
 def login(requests, params):
     nott = 'password' if 'password' not in params else 'phone' if 'phone' not in params else ''
@@ -66,12 +85,6 @@ def stepone(requests, params):
     # send_email()
     if 'email' not in params:
         return custom_response(False, message="Data to'liq emas")
-
-    # if len(str(params['phone'])) != 12:
-    #     return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
-    #
-    # if type(params['phone']) is not int:
-    #     return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
 
     user = check_email_in_db(params['email'])
 
@@ -127,3 +140,9 @@ def steptwo(requests, params):
     update_token(token)
 
     return custom_response(True, message="Ishladi", data={'otp': code})
+
+
+def useractions(request, params):
+
+
+    return custom_response(True, data=request.user.format)
