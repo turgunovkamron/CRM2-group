@@ -60,18 +60,18 @@ def login(requests, params):
     if nott:
         return custom_response(False, message=f"{nott} paramsda bo'lishi kerak")
 
-    user = check_email_in_db(params['email'])
+    user = User.objects.filter(email=params['email']).first()
     if not user:
         return custom_response(False, message='Bu nomerga user yo"q')
 
     # password = params['password']
 
-    if not user["check_password"](params['password']):
+    if not user.check_password(params['password']):
         return custom_response(False, message='Parol xato')
 
     token = Token.objects.get_or_create(user=user)[0]
 
-    return custom_response(True, data=token.key)
+    return custom_response(True, data={"token": token.key}, message="Login bo'ldi")
 
 
 def logout(requests, params):
