@@ -72,9 +72,10 @@ def check_email_in_db(email):
         SELECT * from director_User t
         where t.email = '{email}'
     """
+
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
-        result = dictfetchall(cursor)
+        result = dictfetchone(cursor)
 
         return result
 

@@ -55,16 +55,18 @@ def regis(requests, params):
 
 
 def login(requests, params):
-    nott = 'password' if 'password' not in params else 'phone' if 'phone' not in params else ''
+    nott = 'password' if 'password' not in params else 'email' if 'email' not in params else ''
 
     if nott:
         return custom_response(False, message=f"{nott} paramsda bo'lishi kerak")
 
-    user = check_phone_in_db(params['phone'])
+    user = check_email_in_db(params['email'])
     if not user:
         return custom_response(False, message='Bu nomerga user yo"q')
 
-    if not user.check_password(params['password']):
+    # password = params['password']
+
+    if not user["check_password"](params['password']):
         return custom_response(False, message='Parol xato')
 
     token = Token.objects.get_or_create(user=user)[0]
