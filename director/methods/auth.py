@@ -76,7 +76,7 @@ def login(requests, params):
 
 
 def logout(requests, params):
-    token = check_user_in_token_db(params['user'])
+    token = Token.objects.filter(user=params['user']).first()
 
     if token:
         token.delete()
@@ -147,5 +147,4 @@ def steptwo(requests, params):
 
 def useractions(request, params):
 
-
-    return custom_response(True, data=request.user.format)
+    return custom_response(True, data=request.user.format())
