@@ -97,3 +97,16 @@ def update_token(token):
         cursor.execute(sql)
 
         return True
+
+
+# def update_user(user):
+#
+#     sql = f"""
+#             UPDATE director_user
+#             SET  name = {user.name},
+#             where key  = '{token['key']}'
+#         """
+#     with closing(connection.cursor()) as cursor:
+#         cursor.execute(sql)
+#
+#         return True

@@ -145,6 +145,8 @@ def steptwo(requests, params):
     return custom_response(True, message="Ishladi", data={'otp': code})
 
 
-def useractions(request, params):
-
+def user_info(request, params):
     return custom_response(True, data=request.user.format())
+
+def change_password(request, params):
+    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else

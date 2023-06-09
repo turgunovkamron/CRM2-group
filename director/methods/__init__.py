@@ -1,1 +1,2 @@
-from .auth import regis, login, logout, stepone, steptwo, useractions
+from .auth import regis, login, logout, stepone, steptwo, user_info
+
