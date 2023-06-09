@@ -76,7 +76,7 @@ def login(requests, params):
 
 
 def logout(requests, params):
-    token = Token.objects.filter(user=params['user']).first()
+    token = Token.objects.filter(user=requests.user).first()
 
     if token:
         token.delete()
