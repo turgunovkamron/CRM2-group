@@ -148,5 +148,42 @@ def steptwo(requests, params):
 def user_info(request, params):
     return custom_response(True, data=request.user.format())
 
+<<<<<<< HEAD
 def change_password(request, params):
     nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else
+=======
+
+def change_phone(request, params):
+    if "phone" not in params:
+        return custom_response(False, message="Phone kirib kelishi kerak")
+    if "phone" in params:
+        user = check_phone_in_db(params["phone"])
+        if user and user['id'] != request.user.id:
+            return custom_response(True, message="raqam band")
+
+        if len(params["phone"]) != 12:
+            return custom_response(False, message="Raqamni tog'ri yozing ")
+
+        if type(params['phone']) is not int:
+            return custom_response(False, message="Raqam sonladan iborat bolishi kerak")
+
+        update_user(phone=params["phone"])
+
+    return custom_response(True, data=request.user.format())
+
+
+def change_name(request, params):
+    if "name" not in params:
+        return custom_response(False, message="Name kirish kerak")
+    if "name" in params:
+        update_user(name=params["name"])
+    return custom_response(True, data=request.user.format())
+
+
+def change_last_name(request, params):
+    if "last_name" not in params:
+        return custom_response(False, message="Last name kiriting")
+    if "Last_name" in params:
+        update_user(last_name=params["last_name"])
+    return custom_response(True, data=request.user.format())
+>>>>>>> 51e26a57ab1bd653c1ebceee5205db7d4a28e4da

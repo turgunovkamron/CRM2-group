@@ -32,7 +32,7 @@ def dictfetchall(cursor):
 
 def check_phone_in_db(phone):
     sql = f"""
-        SELECT phone from director_User t
+        SELECT * from director_User t
         where t.phone like '{phone}'
     """
     with closing(connection.cursor()) as cursor:
