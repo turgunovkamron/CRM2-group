@@ -148,10 +148,9 @@ def steptwo(requests, params):
 def user_info(request, params):
     return custom_response(True, data=request.user.format())
 
-<<<<<<< HEAD
+
 def change_password(request, params):
     nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else
-=======
 
 def change_phone(request, params):
     if "phone" not in params:
@@ -186,4 +185,3 @@ def change_last_name(request, params):
     if "Last_name" in params:
         update_user(last_name=params["last_name"])
     return custom_response(True, data=request.user.format())
->>>>>>> 51e26a57ab1bd653c1ebceee5205db7d4a28e4da
