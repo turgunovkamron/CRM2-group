@@ -152,11 +152,8 @@ def user_info(request, params):
 
 
 def change_password(request, params):
-    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else''
-    return custom_response(False ,message="Newpass or oldpass paramsda bo'lishi kerak")
-
-
-
+    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else ''
+    return custom_response(False, message="Newpass or oldpass paramsda bo'lishi kerak")
 
 
 def change_phone(request, params):
@@ -194,14 +191,7 @@ def change_last_name(request, params):
     return custom_response(True, data=request.user.format())
 
 
-
-
-regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-
 def check(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     if re.fullmatch(regex, email):
-        return custom_response(True ,message="To'rgi email")
-
-
-
-
+        return custom_response(True, message="To'rgi email")
