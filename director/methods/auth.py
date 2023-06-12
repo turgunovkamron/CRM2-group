@@ -146,34 +146,47 @@ def steptwo(requests, params):
 
     return custom_response(True, message="Ishladi", data={'otp': code})
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
 
-def user_info(request, params):
-    return custom_response(True, data=request.user.format())
 
-
+<<<<<<< Updated upstream
 def change_password(request, params):
     nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else ''
     return custom_response(False, message="Newpass or oldpass paramsda bo'lishi kerak")
 
+=======
+def user_actions(request, params):
+    user = request.user
+>>>>>>> Stashed changes
 
-def change_phone(request, params):
-    if "phone" not in params:
-        return custom_response(False, message="Phone kirib kelishi kerak")
-    if "phone" in params:
-        user = check_phone_in_db(params["phone"])
-        if user and user['id'] != request.user.id:
-            return custom_response(True, message="raqam band")
+    if 'new_password' in params:
+        if "old_password" not in params:
+            return custom_response(False, message="Eski parol paramsda bo'lishi kerak")
+        if not user.check_password(params['old_password']):
+            return custom_response(False, message="Eski parol xato")
+        user.set_password(params['password'])
+        user.save()
 
-        if len(params["phone"]) != 12:
-            return custom_response(False, message="Raqamni tog'ri yozing ")
+    if 'name' in params:
+        user.name = params['name']
+        user.save()
 
-        if type(params['phone']) is not int:
-            return custom_response(False, message="Raqam sonladan iborat bolishi kerak")
+    if 'last_name' in params:
+        user.last_name = params['last_name']
+        user.save()
 
-        update_user(phone=params["phone"])
+    if 'email' in params:
+        user.email = params['email']
+        user.save()
 
-    return custom_response(True, data=request.user.format())
+    if 'phone' in params:
+        user.profile.phone_number = params['phone']
+        user.profile.save()
 
+<<<<<<< Updated upstream
 
 def change_name(request, params):
     if "name" not in params:
@@ -195,3 +208,6 @@ def check(email):
     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     if re.fullmatch(regex, email):
         return custom_response(True, message="To'rgi email")
+=======
+    return custom_response(True, data=user.format(), message={"success": "User updated"})
+>>>>>>> Stashed changes
