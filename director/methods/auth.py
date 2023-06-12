@@ -4,7 +4,6 @@ import uuid
 import re
 
 from methodism import custom_response, code_decoder, generate_key
-from rest_framework import request
 from rest_framework.authtoken.models import Token
 
 from base.send_email import send_email
@@ -91,6 +90,10 @@ def stepone(requests, params):
     if 'email' not in params:
         return custom_response(False, message="Data to'liq emas")
 
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    if not re.fullmatch(regex, params['email']):
+        return custom_response(False, message="Xato email")
+
     user = check_email_in_db(params['email'])
 
     if user:
@@ -146,21 +149,9 @@ def steptwo(requests, params):
 
     return custom_response(True, message="Ishladi", data={'otp': code})
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
 
-
-<<<<<<< Updated upstream
-def change_password(request, params):
-    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else ''
-    return custom_response(False, message="Newpass or oldpass paramsda bo'lishi kerak")
-
-=======
 def user_actions(request, params):
     user = request.user
->>>>>>> Stashed changes
 
     if 'new_password' in params:
         if "old_password" not in params:
@@ -185,29 +176,3 @@ def user_actions(request, params):
     if 'phone' in params:
         user.profile.phone_number = params['phone']
         user.profile.save()
-
-<<<<<<< Updated upstream
-
-def change_name(request, params):
-    if "name" not in params:
-        return custom_response(False, message="Name kirish kerak")
-    if "name" in params:
-        update_user(name=params["name"])
-    return custom_response(True, data=request.user.format())
-
-
-def change_last_name(request, params):
-    if "last_name" not in params:
-        return custom_response(False, message="Last name kiriting")
-    if "Last_name" in params:
-        update_user(last_name=params["last_name"])
-    return custom_response(True, data=request.user.format())
-
-
-def check(email):
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-    if re.fullmatch(regex, email):
-        return custom_response(True, message="To'rgi email")
-=======
-    return custom_response(True, data=user.format(), message={"success": "User updated"})
->>>>>>> Stashed changes
