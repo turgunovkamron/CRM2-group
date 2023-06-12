@@ -1,8 +1,10 @@
 import datetime
 import random
 import uuid
+import re
 
 from methodism import custom_response, code_decoder, generate_key
+from rest_framework import request
 from rest_framework.authtoken.models import Token
 
 from base.send_email import send_email
@@ -150,7 +152,12 @@ def user_info(request, params):
 
 
 def change_password(request, params):
-    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else
+    nott = "newpass" if "newpass" not in params else "oldpass" if "oldpass" not in params else''
+    return custom_response(False ,message="Newpass or oldpass paramsda bo'lishi kerak")
+
+
+
+
 
 def change_phone(request, params):
     if "phone" not in params:
@@ -185,3 +192,16 @@ def change_last_name(request, params):
     if "Last_name" in params:
         update_user(last_name=params["last_name"])
     return custom_response(True, data=request.user.format())
+
+
+
+
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+def check(email):
+    if re.fullmatch(regex, email):
+        return custom_response(True ,message="To'rgi email")
+
+
+
+
