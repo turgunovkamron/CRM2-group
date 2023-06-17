@@ -260,8 +260,8 @@ class user_actions(GenericAPIView):
             user.save()
 
             return Response({
-            "success": f"{requests.user.phone} ning paroli {requests.user.password}gs o'zgardi"
-        })
+                "success": f"{requests.user.phone} ning paroli {requests.user.password}gs o'zgardi"
+            })
 
     def delete(self, requests):
         requests.user.delete()
