@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from base.costumize import BearerAuto
 from base.send_email import send_email
 from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db, check_email_in_db, update_token
-from director.models import User, OTP
+from director.models import User, OTP, user
 
 
 def regis(requests, params):
@@ -246,7 +246,20 @@ class user_actions(GenericAPIView):
         requests.user.set_password(data["new"])
         requests.user.save()
 
-        return Response({
+        if 'email' in data:
+            regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+            if not re.fullmatch(regex, data['email']):
+                return custom_response(False, message="Xato email")
+
+            users = User.objects.filter(email=data['email']).first()
+
+            if users:
+                return custom_response(False, message="Bunaqa user bor")
+
+            user.email = data['email']
+            user.save()
+
+            return Response({
             "success": f"{requests.user.phone} ning paroli {requests.user.password}gs o'zgardi"
         })
 
