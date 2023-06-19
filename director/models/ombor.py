@@ -1,5 +1,7 @@
 from django.db import models
 
+from director.models.user import User
+
 
 class Ombor(models.Model):
     nomi = models.CharField(max_length=128)
@@ -13,8 +15,61 @@ class Maxsulot(models.Model):
     razmer = models.CharField(max_length=128)
     rangi = models.CharField(max_length=128)
     joyi = models.CharField(max_length=128)
-    soni = models.IntegerField()
-    sotish_narxi = models.IntegerField()
+    sotish_narxi = models.IntegerField(default=0)
     sotish_narxi_type = models.CharField(max_length=10)
-    kirib_kelgan_narxi = models.IntegerField()
+    kirib_kelgan_narxi = models.IntegerField(default=0)
     kirib_kelgan_narxi_type = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.maxsulot_nomi
+
+
+class Korzina(models.Model):
+    maxsulot = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
+    narxi = models.BigIntegerField()
+    narxi_tupy = models.CharField(max_length=7)
+    nechtaligi = models.IntegerField(default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.maxsulot.maxsulot_nomi
+
+    def save(self, *args, **kwargs):
+        self.narxi = int(self.maxsulot.sotish_narxi) * int(self.nechtaligi)
+        self.narxi_tupy = self.maxsulot.sotish_narxi_type
+        return super(Korzina, self).save(*args, **kwargs)
+
+    def format(self, *args, **kwargs):
+        return {
+            "id": self.id,
+            "maxsulot": self.maxsulot.maxsulot_nomi,
+            "nechtaligi": self.nechtaligi,
+            "narxi": self.narxi,
+            "narx_type": self.narxi_tupy
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
