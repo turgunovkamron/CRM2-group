@@ -1,6 +1,6 @@
 from methodism import custom_response
 
-from director.models import Korzina, Maxsulot
+from director.models import Korzina, Maxsulot, Likes
 
 
 def korzina_qoshish(request, params):
@@ -35,3 +35,35 @@ def korzina_delete(request, params):
     maxsulot.delete()
 
     return custom_response(True, message="Maxsulot ochirildi")
+
+
+def likes(requests ,params):
+    if "key" not in params or "prod_id" not in params or params['key'] not in ['like' , 'dis']:
+        return custom_response(False, message="Data to'liq emas")
+
+    prod = Maxsulot.objects.filter(id=params['prod_id']).first()
+    if not prod:
+        return custom_response(False, message="Bunaqasi yo'q")
+
+    root = Likes.objects.get_or_created(prod=prod , user=requests.user)[0]
+    if root.like and params['key'] == 'like':
+        root.like = False
+        root.dis = False
+    elif root.dis and params['dis'] == 'dis':
+        root.like = False
+        root.dis = False
+
+    else:
+        root.like = True if params['key'] == 'like ' else False
+        root.dis = True if params['key'] == 'dis' else False
+
+    root.save()
+
+    likelar = Likes.objects.filter(prod=prod , like = True).count()
+    dislar = Likes.objects.filter(prod=prod , dis = True).count()
+
+    # return custom_response(True , message=f"{params['key']} bosildi")
+    return {
+        "likes":likelar,
+        "dis":dislar 
+    }
