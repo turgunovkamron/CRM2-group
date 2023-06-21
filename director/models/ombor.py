@@ -51,62 +51,14 @@ class Korzina(models.Model):
 
 
 class Likes(models.Model):
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
     prod = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     like = models.BooleanField(default=False)
     dis = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-=======
->>>>>>> Stashed changes
-    prod = models.ForeignKey(Maxsulot , on_delete=models.CASCADE)
-    user = models.ForeignKey(User , on_delete=models.SET_NULL , null=True)
-    like = models.BooleanField(default=False)
-    dis = models.BooleanField(default=False)
-
-    def save(self , *args , **kwargs):
-<<<<<<< Updated upstream
-=======
->>>>>>> a0da34c78da6f5eae1dfdb72e54387c6341e0dcb
->>>>>>> Stashed changes
         if self.like:
             self.dis = False
         elif self.dis:
             self.like = False
-
-<<<<<<< Updated upstream
-        return super(Likes ,self).save(*args ,**kwargs)
-=======
-<<<<<<< HEAD
         return super(Likes, self).save(*args, **kwargs)
-
-=======
-        return super(Likes ,self).save(*args ,**kwargs)
->>>>>>> a0da34c78da6f5eae1dfdb72e54387c6341e0dcb
->>>>>>> Stashed changes
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

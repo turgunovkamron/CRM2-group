@@ -37,9 +37,7 @@ def korzina_delete(request, params):
     return custom_response(True, message="Maxsulot ochirildi")
 
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
+
 def likes(req, params):
     if "key" not in params or 'prod_id' not in params or params.get('key', "") not in ['like', 'dis']:
         return custom_response(False, message="data to'lliq emas")
@@ -57,37 +55,11 @@ def likes(req, params):
         root.dis = False
     else:
         root.like = True if params['key'] == 'like' else False
-=======
->>>>>>> Stashed changes
-def likes(requests ,params):
-    if "key" not in params or "prod_id" not in params or params['key'] not in ['like' , 'dis']:
-        return custom_response(False, message="Data to'liq emas")
 
-    prod = Maxsulot.objects.filter(id=params['prod_id']).first()
-    if not prod:
-        return custom_response(False, message="Bunaqasi yo'q")
-
-    root = Likes.objects.get_or_created(prod=prod , user=requests.user)[0]
-    if root.like and params['key'] == 'like':
-        root.like = False
-        root.dis = False
-    elif root.dis and params['dis'] == 'dis':
-        root.like = False
-        root.dis = False
-
-    else:
-        root.like = True if params['key'] == 'like ' else False
-<<<<<<< Updated upstream
-=======
->>>>>>> a0da34c78da6f5eae1dfdb72e54387c6341e0dcb
->>>>>>> Stashed changes
-        root.dis = True if params['key'] == 'dis' else False
 
     root.save()
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
+
     likelar = Likes.objects.filter(prod=prod, like=True).count()
     dislar = Likes.objects.filter(prod=prod, dis=True).count()
 
@@ -95,21 +67,3 @@ def likes(requests ,params):
         "likes": likelar,
         "dis": dislar,
     }
-
-
-
-=======
->>>>>>> Stashed changes
-    likelar = Likes.objects.filter(prod=prod , like = True).count()
-    dislar = Likes.objects.filter(prod=prod , dis = True).count()
-
-    # return custom_response(True , message=f"{params['key']} bosildi")
-    return {
-        "likes":likelar,
-        "dis":dislar 
-<<<<<<< Updated upstream
-    }
-=======
-    }
->>>>>>> a0da34c78da6f5eae1dfdb72e54387c6341e0dcb
->>>>>>> Stashed changes
