@@ -9,6 +9,15 @@ class Ombor(models.Model):
     xodim_soni = models.IntegerField()
     maxsulot = models.IntegerField()
 
+    def format(self):
+        return {
+            "id": self.id,
+            "nomi": self.nomi,
+            "location": self.location,
+            "xodim_soni": self.xodim_soni,
+            "maxsulot": self.maxsulot,
+        }
+
 
 class Maxsulot(models.Model):
     maxsulot_nomi = models.CharField(max_length=128)

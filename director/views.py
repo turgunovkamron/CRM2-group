@@ -5,4 +5,4 @@ from director import methods
 # Create your views here.
 class Main(METHODISM):
     file = methods
-    not_auth_methods = ['regis', 'login', 'stepone', 'steptwo' , 'user_actions']
+    not_auth_methods = ['regis', 'login', 'stepone', 'steptwo', "all.methods"]

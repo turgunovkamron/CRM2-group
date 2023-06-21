@@ -1,6 +1,6 @@
 from methodism import custom_response
 
-from director.models import Korzina, Maxsulot, Likes
+from director.models import Korzina, Maxsulot, Likes, Ombor
 
 
 def korzina_qoshish(request, params):
@@ -37,7 +37,6 @@ def korzina_delete(request, params):
     return custom_response(True, message="Maxsulot ochirildi")
 
 
-
 def likes(req, params):
     if "key" not in params or 'prod_id' not in params or params.get('key', "") not in ['like', 'dis']:
         return custom_response(False, message="data to'lliq emas")
@@ -56,9 +55,7 @@ def likes(req, params):
     else:
         root.like = True if params['key'] == 'like' else False
 
-
     root.save()
-
 
     likelar = Likes.objects.filter(prod=prod, like=True).count()
     dislar = Likes.objects.filter(prod=prod, dis=True).count()
@@ -67,3 +64,17 @@ def likes(req, params):
         "likes": likelar,
         "dis": dislar,
     }
+
+
+def all_ombor(requests, params):
+    if requests.user.type not in [1, 2]:
+        return {
+            "error": "Sizga ruxsat yo'q!"
+        }
+
+    return {
+        "result": [x.format() for x in Ombor.objects.all()]
+    }
+
+def add_ombor(req, params):
+    pass

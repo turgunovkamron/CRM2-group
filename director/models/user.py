@@ -5,6 +5,13 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from django.db import models
 
 
+def user_types(key):
+    return {
+        "ombor": 2,
+        "director": 1,
+        "magazin": 3,
+    }.get(key, 0)
+
 class CustomUserManager(UserManager):
     def create_user(self, email, password=None, is_staff=False, is_active=True, is_superuser=False,
                     **extra_fields):
@@ -34,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=1029)
     email = models.EmailField(unique=True)
     join_date = models.DateField(auto_now_add=True)
-    type = models.SmallIntegerField(default=0)
+    type = models.SmallIntegerField(default=0)  # 0-user, 1-director, 2-ombor, 3-magazin
 
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

@@ -13,22 +13,20 @@ from base.costumize import BearerAuto
 from base.send_email import send_email
 from base.serves import check_phone_in_db, check_token_in_db, check_user_in_token_db, check_email_in_db, update_token
 from director.models import User, OTP, user
+from director.models.user import user_types
 
 
 def regis(requests, params):
     nott = 'token' if 'token' not in params else 'password' if 'password' not in params else ''
-    # print("a")
+
     if nott:
-        # print("aa")
         return custom_response(False, message=f"{nott} paramsda bo'lishi kere")
-    # print("b")
+
     token = check_token_in_db(params['token'])
-    # print("c")
+
     if not token:
-        # print("cc")
         return custom_response(False, message="Token xato")
 
-    # print("d")
     if token['is_expire']:
         return custom_response(False, message="Token yaroqsiz!")
 
@@ -46,9 +44,14 @@ def regis(requests, params):
         'email': token['email']
     }
 
-    if params.get('key', None) == 'SecretKey':
-        user_data.update({'is_staff': True, 'is_superuser': True})
-        user = User.objects.create_superuser(**user_data)
+    if params.get('key', None):  # key: ombor, magazin, director
+        user_data.update({
+            'is_staff': True,
+            'is_superuser': True,
+            "type": user_types(params['key'])
+        })
+        # user_type = 1 if params['key'] == "director" else 2 if params['key'] == 'ombor' else 3
+
     user = User.objects.create_user(**user_data)
     token = Token.objects.create(user=user)
     return custom_response(True, data=token.key)
@@ -92,7 +95,6 @@ def stepone(requests, params):
     if not re.fullmatch(regex, params['email']):
         return custom_response(False, message="Xato email")
 
-
     code = random.randint(1000000, 9999999)
 
     send_email(OTP=code, email=params['email'])
@@ -116,7 +118,7 @@ def steptwo(requests, params):
     token = check_token_in_db(params['token'])
     if not token:
         return custom_response(False, message="Token xato")
-    # print(token)
+
     if token['is_conf']:
         return custom_response(False, message="Token ishlatilgan")
 
@@ -144,124 +146,131 @@ def steptwo(requests, params):
     return custom_response(True, message="Ishladi", data={'otp': code})
 
 
+def user_actions(request, params):
+    user = request.user
+    if 'new_password' in params:
+        if "old_password" not in params:
+            return custom_response(False, message="Eski parol paramsda bo'lishi kerak")
+        if params['new_password'] == params["old_password"]:
+            return custom_response(False, message="Parol birxil bo'lishi mumkun emas")
+        if user.check_password(params['new_password']):
+            return custom_response(False, message="Eski parolda foydalangmang")
+        if not user.check_password(params['old_password']):
+            return custom_response(False, message="Eski parol xato")
+        if len(str(params['new_password'])) < 8 or " " in params['new_password']:
+            return custom_response(False, message="Parol 8tadan kichkina va bo'shliq bolishi kerak emas")
+        user.set_password(params['new_password'])
+        user.save()
+
+    if 'name' in params:
+        user.name = params['name']
+        user.save()
+
+    if 'last_name' in params:
+        user.last_name = params['last_name']
+        user.save()
+
+    if 'email' in params:
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if not re.fullmatch(regex, params['email']):
+            return custom_response(False, message="Xato email")
+
+        users = User.objects.filter(email=params['email']).first()
+
+        if users:
+            return custom_response(False, message="Bunaqa user bor")
+
+        user.email = params['email']
+        user.save()
+
+    if 'phone' in params:
+        if len(str(params['phone'])) != 12:
+            return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
+
+        if type(params['phone']) is not int:
+            return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
+
+        if check_phone_in_db(params['phone']):
+            return custom_response(False, message="Bu nomer zanyat")
+        user.phone = params['phone']
+        user.save()
+
+    return custom_response(True, data=user.format())
+
+
+def user_info(requests, params):
+    return custom_response(True, data=requests.user.format)
+
+
+def delete_user(requests, params):
+    requests.user.delete()
+    return custom_response(True, message="User o'chirildi")
+# class user_actions(GenericAPIView):
+#     permission_classes = IsAuthenticated,
+#     authentication_classes = BearerAuto,
 #
-# def user_actions(request, params):
-#     user = request.user
-#     if 'new_password' in params:
-#         if "old_password" not in params:
-#             return custom_response(False, message="Eski parol paramsda bo'lishi kerak")
-#         if params['new_password'] == params["old_password"]:
-#             return custom_response(False, message="Parol birxil bo'lishi mumkun emas")
-#         if user.check_password(params['new_password']):
-#             return custom_response(False, message="Eski parolda foydalangmang")
-#         if not user.check_password(params['old_password']):
-#             return custom_response(False, message="Eski parol xato")
-#         if len(str(params['new_password'])) < 8 or " " in params['new_password']:
-#             return custom_response(False, message="Parol 8tadan kichkina va bo'shliq bolishi kerak emas")
-#         user.set_password(params['new_password'])
-#         user.save()
+#     def get(self, requests):
+#         return Response({
+#             "data": requests.user.format()
+#         })
 #
-#     if 'name' in params:
-#         user.name = params['name']
-#         user.save()
+#     def put(self, requests):
+#         data = requests.data
+#         if "phone" in data:
+#             user = User.objects.filter(phone=data["phone"]).first()
+#             if user and user.id != requests.user.id:
+#                 return Response({
+#                     "Error": "Bu raqam zanit"
+#                 })
 #
-#     if 'last_name' in params:
-#         user.last_name = params['last_name']
-#         user.save()
+#         requests.user.phone = data.get("phone", requests.user.phone)
+#         requests.user.name = data.get("name", requests.user.name)
 #
-#     if 'email' in params:
-#         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-#         if not re.fullmatch(regex, params['email']):
-#             return custom_response(False, message="Xato email")
+#         requests.user.save()
+#         return Response({
+#             "data": requests.user.format()
+#         })
 #
-#         users = User.objects.filter(email=params['email']).first()
+#     def post(self, requests):
+#         data = requests.data
+#         if "old" not in data or "new" not in data:
+#             return Response({
+#                 "Error": "data toliq emas !"
+#             })
 #
-#         if users:
-#             return custom_response(False, message="Bunaqa user bor")
+#         if not requests.user.check_password(data["old"]):
+#             return Response({
+#                 "error": "Parol xato"
+#             })
 #
-#         user.email = params['email']
-#         user.save()
+#         if requests.user.check_password(data["new"]):
+#             return Response({
+#                 "error": "Eski parol qaytarma"
+#             })
 #
-#     if 'phone' in params:
-#         if len(str(params['phone'])) != 12:
-#             return custom_response(False, message="Phone 12ta raqamdan bo'lishi kere")
+#         requests.user.set_password(data["new"])
+#         requests.user.save()
 #
-#         if type(params['phone']) is not int:
-#             return custom_response(False, message="Phone raqamlardan iborat bo'lishi kerak")
+#         if 'email' in data:
+#             regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+#             if not re.fullmatch(regex, data['email']):
+#                 return custom_response(False, message="Xato email")
 #
-#         if check_phone_in_db(params['phone']):
-#             return custom_response(False, message="Bu nomer zanyat")
-#         user.phone = params['phone']
-#         user.save()
+#             users = User.objects.filter(email=data['email']).first()
 #
-#     return custom_response(True, data=user.format())
-
-class user_actions(GenericAPIView):
-    permission_classes = IsAuthenticated,
-    authentication_classes = BearerAuto,
-
-    def get(self, requests):
-        return Response({
-            "data": requests.user.format()
-        })
-
-    def put(self, requests):
-        data = requests.data
-        if "phone" in data:
-            user = User.objects.filter(phone=data["phone"]).first()
-            if user and user.id != requests.user.id:
-                return Response({
-                    "Error": "Bu raqam zanit"
-                })
-
-        requests.user.phone = data.get("phone", requests.user.phone)
-        requests.user.name = data.get("name", requests.user.name)
-
-        requests.user.save()
-        return Response({
-            "data": requests.user.format()
-        })
-
-    def post(self, requests):
-        data = requests.data
-        if "old" not in data or "new" not in data:
-            return Response({
-                "Error": "data toliq emas !"
-            })
-
-        if not requests.user.check_password(data["old"]):
-            return Response({
-                "error": "Parol xato"
-            })
-
-        if requests.user.check_password(data["new"]):
-            return Response({
-                "error": "Eski parol qaytarma"
-            })
-
-        requests.user.set_password(data["new"])
-        requests.user.save()
-
-        if 'email' in data:
-            regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-            if not re.fullmatch(regex, data['email']):
-                return custom_response(False, message="Xato email")
-
-            users = User.objects.filter(email=data['email']).first()
-
-            if users:
-                return custom_response(False, message="Bunaqa user bor")
-
-            user.email = data['email']
-            user.save()
-
-            return Response({
-                "success": f"{requests.user.phone} ning paroli {requests.user.password}gs o'zgardi"
-            })
-
-    def delete(self, requests):
-        requests.user.delete()
-
-        return Response({
-            "success": "Done "
-        })
+#             if users:
+#                 return custom_response(False, message="Bunaqa user bor")
+#
+#             user.email = data['email']
+#             user.save()
+#
+#             return Response({
+#                 "success": f"{requests.user.phone} ning paroli {requests.user.password}gs o'zgardi"
+#             })
+#
+#     def delete(self, requests):
+#         requests.user.delete()
+#
+#         return Response({
+#             "success": "Done "
+#         })
