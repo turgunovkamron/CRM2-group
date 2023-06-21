@@ -92,10 +92,6 @@ def stepone(requests, params):
     if not re.fullmatch(regex, params['email']):
         return custom_response(False, message="Xato email")
 
-    user = check_email_in_db(params['email'])
-
-    if user:
-        return custom_response(False, message="Bunaqa user bor")
 
     code = random.randint(1000000, 9999999)
 
