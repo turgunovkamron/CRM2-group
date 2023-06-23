@@ -10,7 +10,3 @@ def all_methods(requests, params):
     return {
         "result": [x for x in unusable_variable if "__" not in x and x not in mumkinmas]
     }
-
-
-
-

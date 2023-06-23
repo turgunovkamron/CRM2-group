@@ -33,6 +33,11 @@ class Maxsulot(models.Model):
         return self.maxsulot_nomi
 
 
+class OmborMaxsulot(models.Model):
+    maxsulot = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
+    ombor = models.ForeignKey(Ombor, on_delete=models.CASCADE)
+
+
 class Korzina(models.Model):
     maxsulot = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
     narxi = models.BigIntegerField()
