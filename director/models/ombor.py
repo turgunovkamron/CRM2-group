@@ -1,5 +1,6 @@
 from django.db import models
 
+from director.models.Magazin import Magazin, Magazin_zakaz
 from director.models.user import User
 
 
@@ -18,6 +19,9 @@ class Ombor(models.Model):
             "maxsulot": self.maxsulot,
         }
 
+    def __str__(self):
+        return self.nomi
+
 
 class Maxsulot(models.Model):
     maxsulot_nomi = models.CharField(max_length=128)
@@ -33,18 +37,13 @@ class Maxsulot(models.Model):
         return self.maxsulot_nomi
 
 
-class OmborMaxsulot(models.Model):
-    maxsulot = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
-    ombor = models.ForeignKey(Ombor, on_delete=models.CASCADE)
-
-
 class Korzina(models.Model):
-    maxsulot = models.ForeignKey(Maxsulot, on_delete=models.CASCADE)
     narxi = models.BigIntegerField()
     narxi_tupy = models.CharField(max_length=7)
     nechtaligi = models.IntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.BooleanField(default=True)
+    product = models.OneToOneField(Maxsulot, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.maxsulot.maxsulot_nomi
@@ -76,3 +75,27 @@ class Likes(models.Model):
         elif self.dis:
             self.like = False
         return super(Likes, self).save(*args, **kwargs)
+
+
+class Karzina_zakaz(models.Model):
+    karzina_name = models.CharField(max_length=128)
+    nomer_zakaza = models.BigAutoField(primary_key=True)
+    status = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.karzina_name, self.nomer_zakaza, self.status
+
+
+class Magazin_buyurtma(models.Model):
+    magazin = models.ForeignKey(Magazin, on_delete=models.SET_NULL, null=True, blank=True)
+    zakaz_status = models.CharField(max_length=128, choices=[
+        ("Buyurtma qilindi", "Buyurtma qilindi"),
+        ("Yig'ilyapti", "Yig'ilyapti"),
+        ("Yo'lda", "Yo'lda"),
+        ("Keldi", "Keldi")
+    ])
+
+    zakaz = models.ForeignKey(Magazin_zakaz, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.zakaz.name, self.zakaz_status
