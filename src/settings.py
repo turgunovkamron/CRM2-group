@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+$v+9)4+1=@ypkphh--s%lst@5a2nirlcj88a88z4!)%=6x@+%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -83,16 +83,30 @@ WSGI_APPLICATION = 'src.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'crm2group_db',
-        'USER': 'crm2group',
-        'PASSWORD': 'admin123456',
-        'PORT': 5432,
-        'HOST': '127.0.0.1',
+
+if DEBUG is False:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'd4no89aspfs8l7',
+            'USER': 'xsfujkscmpwegq',
+            'PASSWORD': '22d9944cd8490a1fb64dfac9ff220ca9f48ecaa46ec4ff79b2796b5d31fa202c',
+            'PORT': 5432,
+            'HOST': 'ec2-3-218-172-130.compute-1.amazonaws.com',
+        }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'crm2group_db',
+            'USER': 'crm2group',
+            'PASSWORD': 'admin123456',
+            'PORT': 5432,
+            'HOST': '127.0.0.1',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
