@@ -99,12 +99,9 @@ if DEBUG is False:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'crm2group_db',
-            'USER': 'crm2group',
-            'PASSWORD': 'admin123456',
-            'PORT': 5432,
-            'HOST': '127.0.0.1',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME':  BASE_DIR / "db.sqlite3",
+
         }
     }
 
@@ -141,8 +138,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_DIRS = [BASE_DIR / 'static/root']
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'static/root'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
